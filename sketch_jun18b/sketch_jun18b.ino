@@ -3,8 +3,10 @@
 
 WebServer server(80);
 
+const char* id="Lance B: ";
+
 const int buttonPin = 2; // D2
-const int ledPin = 3;    // D3
+const int ledPin = 4;    // D4
 
 const int LOCKED_TIME=2000;
 const int DOUBLE_TIME=200;
@@ -31,11 +33,12 @@ void opponent_hit() {
 
 void setup() {
   Serial.begin(115200);
-  pinMode(buttonPin, INPUT_PULLUP);
+  pinMode(buttonPin, INPUT);
   pinMode(ledPin, OUTPUT);
   setLed(false);
 
   WiFi.softAP(ap_ssid, ap_password);
+  Serial.print(id);
   Serial.print("ESP32 A IP : "); Serial.println(WiFi.softAPIP());
 
   server.on("/block", opponent_hit);
@@ -44,15 +47,17 @@ void setup() {
 
 void hit(){
   WiFiClient client;
-  if (client.connect("192.168.4.1", 80)) { // IP B
+  if (client.connect("192.168.4.1", 80)) { // IP 1
     client.print("GET /block HTTP/1.1\r\nHost: 192.168.4.1\r\nConnection: close\r\n\r\n");
     client.stop();
-    Serial.println("Signal envoyé à B.");
+    Serial.print(id);
+    Serial.println("Signal envoyé à A.");
   } else {
-    Serial.println("Erreur connexion B !");
+    Serial.print(id);
+    Serial.println("Erreur connexion A !");
   }
 }
-
+//*
 void loop(){
   server.handleClient();
 
@@ -60,9 +65,9 @@ void loop(){
     case IDLE:
       if(lastButtonState == HIGH){
         state=LOCKED;
-        timerLocked=millis();
+        timer=millis();
         setLed(true);
-        hit();
+        //hit();
       }
       break;
     case DOUBLE_TIMING:
@@ -78,11 +83,16 @@ void loop(){
       if(millis()-timer > LOCKED_TIME){
         state=IDLE;
         setLed(false);
+        Serial.print(id);
+        Serial.println("Locked end");
       }
       break;
   }
   lastButtonState = digitalRead(buttonPin);
-  delay(5);
-}
+  delay(20);
+}//*/
 
-
+//void loop(){
+//  Serial.println(digitalRead(buttonPin));
+//  delay(100);
+//}
