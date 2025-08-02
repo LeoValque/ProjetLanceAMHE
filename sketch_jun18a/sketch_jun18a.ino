@@ -67,7 +67,7 @@ void loop() {
   unsigned long now = millis();
 
   if (doubleTouch) {
-    if (now - doubleTouchStart < 3000) {
+    if (now - doubleTouchStart < 2500) {
       setLed((now / 300) % 2);
     } else {
       doubleTouch = false;
